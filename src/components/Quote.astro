@@ -7,7 +7,7 @@ const fallbackBody = "Hi Muhammed, I'd like a quote.\nService: \nFrom / to: \nSi
 <section class="quote" id="quote">
   <div class="wrap quote__in">
     <div class="quote__intro" data-reveal>
-      <p class="eyebrow">Free quote</p>
+      <p class="label"><b>05</b> Free quote</p>
       <h2 class="display quote__t">Your quote request, written for you.</h2>
       <p class="quote__lede">Answer four quick questions and we'll turn them into a text message to {business.owner.split(" ")[0]}. You see exactly what gets sent, and it goes from your own phone. No forms into the void.</p>
       <ul class="direct">
@@ -17,7 +17,7 @@ const fallbackBody = "Hi Muhammed, I'd like a quote.\nService: \nFrom / to: \nSi
       </ul>
     </div>
 
-    <div class="panel" data-reveal style="--i:1">
+    <div class="panel">
       <!-- Works with no JS: a checklist plus real links. JS swaps in the builder. -->
       <div class="fallback" data-qb-fallback>
         <h3>Text us these four things</h3>
@@ -177,24 +177,25 @@ const fallbackBody = "Hi Muhammed, I'd like a quote.\nService: \nFrom / to: \nSi
 </script>
 
 <style>
-  .quote { padding: var(--s-9) 0; background: linear-gradient(180deg, var(--ink), var(--ink-2)); }
+  .quote { padding: var(--s-9) 0; border-top: 1px solid var(--line); }
   .quote__in { display: grid; grid-template-columns: 5fr 7fr; gap: var(--s-8); align-items: start; }
   .quote__intro { display: grid; gap: var(--s-4); }
   .quote__t { font-size: var(--t-2xl); }
   .quote__lede { color: var(--muted); font-size: var(--t-lg); }
   .direct { display: grid; gap: var(--s-2); margin-top: var(--s-4); }
   .direct a { display: flex; align-items: center; gap: var(--s-4); text-decoration: none; padding: var(--s-3) 0; border-bottom: 1px solid var(--line); font-weight: 700; font-size: var(--t-lg); overflow-wrap: anywhere; }
+  .direct li:last-child a { font-size: var(--t-md); }
   .direct .icon { width: 24px; height: 24px; color: var(--orange); flex: none; }
   .direct small { display: block; font-size: var(--t-xs); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
   @media (hover: hover) and (pointer: fine) { .direct a:hover { color: var(--orange); } }
 
-  .panel { background: var(--ink-2); border: 1px solid var(--line); border-radius: 24px; padding: clamp(1.25rem, 3vw, 2.5rem); box-shadow: 0 30px 80px -30px rgb(248 124 26 / .35); }
+  .panel { background: var(--ink-2); border: 1px solid var(--line); border-radius: var(--r); border-top: 3px solid var(--orange); padding: clamp(1.25rem, 3vw, 2.5rem); }
   .fallback { display: grid; gap: var(--s-4); }
   .fallback ol { padding-left: 1.2em; color: var(--muted); display: grid; gap: var(--s-2); }
   .fallback h3, .qb legend { font-size: var(--t-xl); font-weight: 900; font-variation-settings: "wdth" 112; text-transform: uppercase; line-height: 1; }
 
   .qb { display: grid; gap: var(--s-5); }
-  .qb__progress { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .qb__progress { height: 4px; background: var(--line); overflow: hidden; }
   .qb__progress span { display: block; height: 100%; background: linear-gradient(90deg, var(--yellow), var(--orange)); transform-origin: left; transform: scaleX(.25); transition: transform 400ms var(--ease-out); }
   .qb__count { font-size: var(--t-xs); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-top: calc(-1 * var(--s-3)); }
   .qb__step { border: 0; margin: 0; padding: 0; display: grid; gap: var(--s-4); min-width: 0; }
@@ -211,7 +212,7 @@ const fallbackBody = "Hi Muhammed, I'd like a quote.\nService: \nFrom / to: \nSi
   .chips { display: flex; flex-wrap: wrap; gap: var(--s-2); }
   .chip { position: relative; }
   .chip input { position: absolute; opacity: 0; pointer-events: none; }
-  .chip span { display: inline-flex; align-items: center; min-height: 44px; padding: 0 1.1em; border: 1.5px solid var(--line); border-radius: var(--r-pill); font-weight: 700; font-size: var(--t-sm); cursor: pointer; transition: background-color var(--d-ui) ease, border-color var(--d-ui) ease, color var(--d-ui) ease, transform var(--d-press) var(--ease-out); }
+  .chip span { display: inline-flex; align-items: center; min-height: 44px; padding: 0 1.1em; border: 1.5px solid var(--line); border-radius: var(--r); font-weight: 700; font-size: var(--t-sm); cursor: pointer; transition: background-color var(--d-ui) ease, border-color var(--d-ui) ease, color var(--d-ui) ease, transform var(--d-press) var(--ease-out); }
   .chip:active span { transform: scale(0.97); }
   .chip input:checked + span { background: var(--orange); border-color: var(--orange); color: var(--ink); }
   .chip input:focus-visible + span { outline: 3px solid var(--yellow); outline-offset: 2px; }
@@ -220,9 +221,9 @@ const fallbackBody = "Hi Muhammed, I'd like a quote.\nService: \nFrom / to: \nSi
   .field { display: grid; gap: var(--s-2); font-size: var(--t-sm); font-weight: 700; }
   .field em { font-style: normal; font-weight: 400; color: var(--muted); }
   .field--wide { grid-column: 1 / -1; }
-  .field select, .field input, .field textarea { font: inherit; font-weight: 500; font-size: 16px; color: var(--paper); background: var(--ink); border: 1.5px solid var(--line); border-radius: var(--r-2); padding: 0.8em 0.9em; min-height: 48px; width: 100%; }
+  .field select, .field input, .field textarea { font: inherit; font-weight: 500; font-size: 16px; color: var(--paper); background: var(--ink); border: 1.5px solid var(--line); border-radius: var(--r); padding: 0.8em 0.9em; min-height: 48px; width: 100%; }
   .field select:focus, .field input:focus, .field textarea:focus { border-color: var(--orange); outline: none; }
-  .bubble { white-space: pre-line; background: var(--orange); color: var(--ink); font-weight: 600; padding: var(--s-4) var(--s-5); border-radius: 22px 22px 6px 22px; max-width: 34ch; justify-self: end; line-height: 1.45; }
+  .bubble { /* the one non-square shape: it IS a text message */ white-space: pre-line; background: var(--orange); color: var(--ink); font-weight: 600; padding: var(--s-4) var(--s-5); border-radius: 22px 22px 6px 22px; max-width: 34ch; justify-self: end; line-height: 1.45; }
   .qb__send { display: flex; flex-wrap: wrap; gap: var(--s-3); }
   .qb__nav { display: flex; justify-content: space-between; gap: var(--s-3); }
   .qb__nav [data-qb-next] { margin-left: auto; }

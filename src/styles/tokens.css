@@ -30,8 +30,8 @@
   --t-md: 1.0625rem;
   --t-lg: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
   --t-xl: clamp(1.75rem, 1.3rem + 1.8vw, 2.75rem);
-  --t-2xl: clamp(2.5rem, 1.6rem + 3.8vw, 4.75rem);
-  --t-hero: clamp(3.4rem, 1.4rem + 9vw, 9.5rem);
+  --t-2xl: clamp(2.25rem, 1.5rem + 3vw, 3.75rem);  /* H2: one clear tier below the hero */
+  --t-hero: clamp(2.6rem, 0.6rem + 9.6vw, 9.5rem);
 
   /* spacing (4px base) */
   --s-1: 0.25rem; --s-2: 0.5rem; --s-3: 0.75rem; --s-4: 1rem; --s-5: 1.5rem;
@@ -39,9 +39,11 @@
   --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
   --max: 1280px;
 
-  --r-1: 4px;
-  --r-2: 10px;
-  --r-pill: 999px;
+  /* ONE radius. The logo is hard-edged italic; rounded pills fight it.
+   * Circles are allowed only where the shape means something (route stops). */
+  --r: 2px;
+  /* No drop-shadows, glows or glass anywhere. Depth comes from ground
+   * colour (ink / ink-2 / paper) and 1px rules. */
 
   /* motion (from the animate skill's tables) */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -49,4 +51,5 @@
   --d-press: 140ms;
   --d-ui: 220ms;
   --d-reveal: 700ms;
+  --skew: -12deg;          /* the logo's forward lean, used by the speed-line motif */
 }

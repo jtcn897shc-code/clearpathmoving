@@ -28,11 +28,12 @@ const year = new Date().getFullYear();
   .foot__logo { width: 260px; height: auto; }
   .foot__col { display: grid; gap: var(--s-2); align-content: start; }
   .foot__col a { text-decoration: none; font-weight: 600; overflow-wrap: anywhere; }
-  .foot__col a:hover { color: var(--orange); }
+  .foot__col a[href^=tel], .foot__col a[href^=sms] { white-space: nowrap; }
+  @media (hover: hover) and (pointer: fine) { .foot__col a:hover { color: var(--orange); } }
   .foot__muted { color: var(--muted); font-size: var(--t-sm); margin-top: var(--s-2); }
   .foot__cities { grid-column: 1 / -1; color: var(--muted); font-size: var(--t-sm); }
   .foot__cities .eyebrow { margin-right: .5em; }
   .foot__base { margin-top: var(--s-6); color: var(--muted); font-size: var(--t-xs); }
   @media (min-width: 761px) { .foot { padding-bottom: var(--s-6); } }
-  @media (max-width: 760px) { .foot__in { grid-template-columns: 1fr 1fr; } .foot__logo { grid-column: 1 / -1; width: 220px; } }
+  @media (max-width: 760px) { .foot__in { grid-template-columns: 1fr; } .foot__logo { grid-column: 1 / -1; width: 220px; } }
 </style>

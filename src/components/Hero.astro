@@ -1,40 +1,89 @@
 ---
 import { Image } from "astro:assets";
 import Icon from "./Icon.astro";
-import { hero, tel, sms, business } from "../data/site";
+import { hero, facts, sms, business } from "../data/site";
 import { images } from "../data/images";
+const [w1, w2, w3] = hero.headline;
 ---
 <section class="hero" id="top">
   <div class="hero__media" aria-hidden="true">
     <Image src={images.hero.src!} alt="" widths={[640, 1024, 1344]} sizes="100vw" loading="eager" fetchpriority="high" />
+    <span class="photo__note">Representative photo</span>
   </div>
+
   <div class="wrap hero__in">
-    <p class="eyebrow hero__eyebrow">{hero.eyebrow}</p>
-    <h1 class="display hero__title">
-      {hero.headline.map((w, i) => <span class="hero__word" style={`--i:${i}`}><span>{w}</span></span>)}
+    <p class="label hero__label">{hero.eyebrow}</p>
+
+    <h1 class="display display--hero hero__title" aria-label={hero.headline.join(" ")}>
+      <span class="hero__line" style="--i:0" aria-hidden="true"><span>{w1}</span></span>
+      <span class="hero__line" style="--i:1" aria-hidden="true"><span>{w2}</span></span>
+      <span class="hero__line hero__line--accent" style="--i:2" aria-hidden="true"><span>{w3}</span><span class="speed hero__speed"><i></i><i></i></span></span>
     </h1>
-    <p class="hero__sub">{hero.sub}</p>
-    <div class="hero__ctas">
-      <a class="btn" href="#quote">{hero.primaryCta}<Icon name="arrow" /></a>
-      <a class="btn btn--ghost" href={sms("Hi Muhammed, I'd like a quote for ")}><Icon name="chat" />Text {business.phoneDisplay}</a>
+
+    <div class="hero__offer">
+      <p class="hero__sub">{hero.sub}</p>
+      <div class="hero__ctas">
+        <a class="btn" href="#quote">{hero.primaryCta}<Icon name="arrow" /></a>
+        <a class="btn btn--ghost" href={sms("Hi Muhammed, I'd like a quote for ")}><Icon name="chat" />Text {business.phoneDisplay}</a>
+      </div>
     </div>
-    <p class="hero__hours"><Icon name="clock" /> Open {business.hours.short}</p>
+
+    <ul class="hero__facts" aria-label="At a glance">
+      {facts.map((f) => <li><strong>{f.strong}</strong> {f.rest}</li>)}
+    </ul>
   </div>
 </section>
+
 <style>
-  .hero { position: relative; min-height: 100svh; display: grid; align-items: end; padding: 140px 0 var(--s-9); overflow: hidden; isolation: isolate; text-align: center; }
+  .hero { position: relative; min-height: 100svh; display: grid; align-items: end; padding: 120px 0 0; overflow: hidden; isolation: isolate; }
   .hero__media { position: absolute; inset: 0; z-index: -1; }
-  .hero__media img { width: 100%; height: 100%; object-fit: cover; }
-  .hero__media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(14 13 12 / .55) 0%, rgb(14 13 12 / .35) 40%, var(--ink) 100%); }
-  .hero__in { display: grid; justify-items: center; gap: var(--s-5); }
-  .hero__title { font-size: var(--t-hero); display: flex; flex-wrap: wrap; justify-content: center; gap: 0 0.25em; }
-  .hero__word { display: inline-block; overflow: clip; padding-bottom: 0.04em; }
-  .hero__word:nth-child(3) { color: var(--orange); }
-  .hero__sub { max-width: 46ch; font-size: var(--t-lg); color: color-mix(in srgb, var(--paper) 86%, transparent); }
-  .hero__ctas { display: flex; flex-wrap: wrap; gap: var(--s-3); justify-content: center; }
-  .hero__hours { display: inline-flex; gap: 0.5em; align-items: center; font-size: var(--t-sm); color: var(--muted); }
-  .hero__hours .icon { width: 1.1em; color: var(--yellow); }
-  .js .hero__word > span { display: inline-block; animation: rise 900ms var(--ease-out) both; animation-delay: calc(150ms + var(--i) * 110ms); }
+  .hero__media img { width: 100%; height: 100%; object-fit: cover; object-position: 70% 50%; }
+  /* Functional scrim: dark where the type sits (left + bottom), photo left readable on the right. */
+  .hero__media::after { content: ""; position: absolute; inset: 0; background:
+      linear-gradient(90deg, rgb(14 13 12 / .92) 0%, rgb(14 13 12 / .7) 38%, rgb(14 13 12 / .1) 75%),
+      linear-gradient(0deg, var(--ink) 0%, transparent 35%); }
+  .hero__media .photo__note { left: auto; right: var(--gutter); bottom: auto; top: 96px; z-index: 1; }
+
+  .hero__in > * { min-width: 0; }
+  .hero__in { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: var(--s-7); row-gap: var(--s-5); }
+  .hero__label { grid-column: 1 / -1; color: var(--paper); }
+  .hero__title { grid-column: 1 / -1; font-size: var(--t-hero); display: grid; justify-items: start; }
+  .hero__line { display: block; overflow: clip; padding: 0 0.12em 0.04em 0; margin-right: -0.12em; }
+  .hero__line > span:first-child { display: inline-block; }
+  .hero__line--accent { display: flex; align-items: center; gap: 0.18em; color: var(--orange); }
+  .hero__speed { font-size: 0.42em; align-self: center; }
+
+  .hero__offer { grid-column: 1; display: grid; gap: var(--s-5); }
+  .hero__sub { max-width: 44ch; font-size: var(--t-lg); color: color-mix(in srgb, var(--paper) 88%, transparent); }
+  .hero__ctas { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+
+  .hero__facts { grid-column: 1 / -1; margin-top: var(--s-7); display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); }
+  .hero__facts li { padding: var(--s-5) var(--s-5) var(--s-6) 0; color: var(--muted); font-size: var(--t-sm); }
+  .hero__facts li + li { padding-left: var(--s-5); border-left: 1px solid var(--line); }
+  .hero__facts strong { display: block; color: var(--paper); font-size: var(--t-lg); font-weight: 800; font-variation-settings: "wdth" 112; margin-bottom: 2px; }
+
+  /* Entrance, once per visit (delight tier): lines rise out of their own clip,
+     then the logo's speed-lines streak in from the left. */
+  .js .hero__line > span:first-child { animation: rise 900ms var(--ease-out) both; animation-delay: calc(120ms + var(--i) * 110ms); }
+  .js .hero__speed i { animation: streak 700ms var(--ease-out) both; animation-delay: 620ms; transform-origin: left; }
+  .js .hero__speed i:last-child { animation-delay: 700ms; }
+  .js .hero__offer, .js .hero__facts { animation: fade-up 800ms var(--ease-out) both; animation-delay: 520ms; }
+  .js .hero__facts { animation-delay: 640ms; }
   @keyframes rise { from { transform: translateY(105%); } }
-  @media (prefers-reduced-motion: reduce) { .js .hero__word > span { animation: fade 400ms ease both; } @keyframes fade { from { opacity: 0; } } }
+  @keyframes streak { from { transform: translateX(-40%) scaleX(0.2); opacity: 0; } }
+  @keyframes fade-up { from { opacity: 0; transform: translateY(16px); } }
+  @media (prefers-reduced-motion: reduce) {
+    .js .hero__line > span:first-child, .js .hero__speed i, .js .hero__offer, .js .hero__facts { animation: fade 400ms ease both; animation-delay: 0ms; }
+    @keyframes fade { from { opacity: 0; } }
+  }
+
+  @media (max-width: 760px) {
+    .hero { min-height: 0; padding-top: 124px; }
+    .hero__media::after { background: linear-gradient(180deg, rgb(14 13 12 / .55) 0%, rgb(14 13 12 / .82) 45%, var(--ink) 100%); }
+    .hero__media .photo__note { top: 84px; left: var(--gutter); right: auto; }
+    .hero__in { grid-template-columns: 1fr; }
+    .hero__facts { grid-template-columns: 1fr; margin-top: var(--s-5); }
+    .hero__facts li, .hero__facts li + li { padding: var(--s-3) 0; border-left: 0; border-bottom: 1px solid var(--line); }
+    .hero__facts strong { display: inline; font-size: var(--t-md); }
+  }
 </style>

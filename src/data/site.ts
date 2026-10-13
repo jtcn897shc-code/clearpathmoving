@@ -43,12 +43,14 @@ export const hero = {
   secondaryCta: "Call or text",
 };
 
-/** Only confirmed, checkable facts. No invented years, counts or ratings. */
+/**
+ * Only confirmed, checkable facts, in plain words. No invented years, job
+ * counts, ratings or "stats" padded out to fill a grid.
+ */
 export const facts = [
-  { value: "19", label: "cities served, Hope to West Vancouver" }, // (confirmed: service-area list)
-  { value: "6–10", label: "open early and late, seven days a week" }, // (confirmed: hours, see TODO above)
-  { value: "1", label: "crew for the move, the junk and the clean-up" }, // (confirmed: service list)
-  { value: "Text", label: "a photo, get a fast quote back" }, // (confirmed: "Call or text … for a fast quote")
+  { strong: "Hope to West Van", rest: "19 cities on the Highway 1 corridor" }, // (confirmed: service-area list)
+  { strong: "6 am – 10 pm", rest: "seven days a week" }, // (confirmed: hours, see TODO above)
+  { strong: "Call or text", rest: "for a fast quote" }, // (confirmed: owner's description)
 ];
 
 export type Service = {
@@ -57,6 +59,7 @@ export type Service = {
   kicker: string;
   body: string;
   includes: string[];
+  cta?: string;
   image?: "hero" | "junk" | "yard" | "paint";
   weight: "primary" | "secondary" | "tertiary";
 };
@@ -66,18 +69,20 @@ export const services: Service[] = [
   {
     id: "moving",
     name: "Full-service moving", // (confirmed: "Full moving service (top three)")
-    kicker: "Most booked",
+    kicker: "Loading, transport, reassembly",
     body: "Truck, crew and the heavy lifting. We load, move and unload, take apart what won't fit through a door and put it back together on the other side.",
     includes: ["Loading & unloading", "Furniture disassembly & reassembly", "Local and Lower Mainland moves"],
+    cta: "Quote a move",
     image: "hero",
     weight: "primary",
   },
   {
     id: "junk",
     name: "Junk removal", // (confirmed: "Junk removal (top three)")
-    kicker: "Same crew, same day",
+    kicker: "Garages, basements, estates",
     body: "Garages, basements, estates and the things that didn't make the cut on moving day. Point at it; we carry it out and haul it away.",
     includes: ["Furniture & mattresses", "Garage and basement clear-outs", "Move-out leftovers"],
+    cta: "Quote a haul-away",
     image: "junk",
     weight: "primary",
   },
@@ -87,6 +92,7 @@ export const services: Service[] = [
     kicker: "You've got the truck",
     body: "Rented a truck or a container? Book the muscle by itself. We load it, or unload it, properly.",
     includes: ["Rental trucks & containers", "Loading or unloading only"],
+    cta: "Book the crew",
     weight: "secondary",
   },
   {
@@ -129,7 +135,7 @@ export const seniors = {
   headline: "A move and a clear-out, in one booking.",
   body: [
     "Leaving the family home is rarely just a move. Some of it goes to the new place, some goes to family, and a lot of it has to go.",
-    "We handle all three in one visit: wrap and carry what's going, take apart and rebuild the furniture, and haul away what isn't. Family can text the plan and photos from anywhere.",
+    "We handle all three in one visit: carry and move what's going, take apart and rebuild the furniture, and haul away what isn't. Family can text the plan and photos from anywhere.",
   ],
 };
 
