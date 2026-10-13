@@ -1,0 +1,231 @@
+---
+import Icon from "./Icon.astro";
+import { quote, allCities, business, tel, sms, mailto } from "../data/site";
+const cities = [...allCities].sort();
+const fallbackBody = "Hi Muhammed, I'd like a quote.\nService: \nFrom / to: \nSize: \nWhen: ";
+---
+<section class="quote" id="quote">
+  <div class="wrap quote__in">
+    <div class="quote__intro" data-reveal>
+      <p class="eyebrow">Free quote</p>
+      <h2 class="display quote__t">Your quote request, written for you.</h2>
+      <p class="quote__lede">Answer four quick questions and we'll turn them into a text message to {business.owner.split(" ")[0]}. You see exactly what gets sent, and it goes from your own phone. No forms into the void.</p>
+      <ul class="direct">
+        <li><a href={tel}><Icon name="phone" /><span><small>Call</small>{business.phoneDisplay}</span></a></li>
+        <li><a href={sms()}><Icon name="chat" /><span><small>Text</small>{business.phoneDisplay}</span></a></li>
+        <li><a href={mailto("Quote request")}><Icon name="mail" /><span><small>Email</small>{business.email}</span></a></li>
+      </ul>
+    </div>
+
+    <div class="panel" data-reveal style="--i:1">
+      <!-- Works with no JS: a checklist plus real links. JS swaps in the builder. -->
+      <div class="fallback" data-qb-fallback>
+        <h3>Text us these four things</h3>
+        <ol>
+          <li>What you need (move, junk, labour, painting, yard)</li>
+          <li>Where from, and where to</li>
+          <li>How big: number of bedrooms or a few photos</li>
+          <li>When you'd like it done</li>
+        </ol>
+        <a class="btn" href={sms(fallbackBody)}><Icon name="chat" />Text {business.phoneDisplay}</a>
+      </div>
+
+      <form class="qb" data-qb hidden novalidate aria-label="Quote builder">
+        <div class="qb__progress" aria-hidden="true"><span data-qb-bar></span></div>
+        <p class="qb__count" aria-live="polite" data-qb-count>Step 1 of 4</p>
+
+        <fieldset class="qb__step" data-step="1">
+          <legend>What do you need?</legend>
+          <p class="qb__hint">Pick all that apply.</p>
+          <div class="chips">
+            {quote.services.map((s) => (
+              <label class="chip"><input type="checkbox" name="service" value={s.label} data-id={s.id} /><span>{s.label}</span></label>
+            ))}
+          </div>
+          <p class="qb__err" data-err="1" hidden>Pick at least one so we know what to quote.</p>
+        </fieldset>
+
+        <fieldset class="qb__step" data-step="2" hidden>
+          <legend data-where-legend>Where's the job?</legend>
+          <div class="fields">
+            <label class="field"><span data-from-label>From</span>
+              <select name="from"><option value="">Choose a city</option>{cities.map((c) => <option>{c}</option>)}<option>Somewhere else</option></select>
+            </label>
+            <label class="field" data-to-field><span>To</span>
+              <select name="to"><option value="">Choose a city</option>{cities.map((c) => <option>{c}</option>)}<option>Somewhere else</option></select>
+            </label>
+          </div>
+          <p class="qb__sub">How big is it?</p>
+          <div class="chips">
+            {quote.sizes.map((s) => <label class="chip"><input type="radio" name="size" value={s} /><span>{s}</span></label>)}
+          </div>
+        </fieldset>
+
+        <fieldset class="qb__step" data-step="3" hidden>
+          <legend>When, and who's asking?</legend>
+          <div class="chips">
+            {quote.when.map((s) => <label class="chip"><input type="radio" name="when" value={s} /><span>{s}</span></label>)}
+          </div>
+          <div class="fields">
+            <label class="field"><span>Your name <em>(optional)</em></span><input name="name" autocomplete="name" /></label>
+            <label class="field field--wide"><span>Anything we should know? <em>(optional)</em></span><textarea name="notes" rows="3" placeholder="Stairs, piano, elevator booking, a parent moving into care…"></textarea></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="qb__step" data-step="4" hidden>
+          <legend>Here's your message</legend>
+          <p class="qb__hint">Tap send and it opens in your messages app, ready to go.</p>
+          <div class="bubble" data-qb-preview aria-live="polite"></div>
+          <div class="qb__send">
+            <a class="btn" data-qb-sms href={sms(fallbackBody)}><Icon name="chat" />Send as a text</a>
+            <a class="btn btn--ghost" data-qb-mail href={mailto("Quote request", fallbackBody)}><Icon name="mail" />Email it instead</a>
+          </div>
+          <p class="qb__hint">Rather talk? <a href={tel}>Call {business.phoneDisplay}</a>.</p>
+        </fieldset>
+
+        <div class="qb__nav">
+          <button type="button" class="btn btn--ghost" data-qb-back hidden>Back</button>
+          <button type="submit" class="btn" data-qb-next>Next<Icon name="arrow" /></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>("[data-qb]");
+  const fallback = document.querySelector<HTMLElement>("[data-qb-fallback]");
+  if (form && fallback) {
+    const PHONE = "+12368879193";
+    const steps = [...form.querySelectorAll<HTMLFieldSetElement>(".qb__step")];
+    const next = form.querySelector<HTMLButtonElement>("[data-qb-next]")!;
+    const back = form.querySelector<HTMLButtonElement>("[data-qb-back]")!;
+    const bar = form.querySelector<HTMLElement>("[data-qb-bar]")!;
+    const count = form.querySelector<HTMLElement>("[data-qb-count]")!;
+    const preview = form.querySelector<HTMLElement>("[data-qb-preview]")!;
+    const smsA = form.querySelector<HTMLAnchorElement>("[data-qb-sms]")!;
+    const mailA = form.querySelector<HTMLAnchorElement>("[data-qb-mail]")!;
+    const toField = form.querySelector<HTMLElement>("[data-to-field]")!;
+    const fromLabel = form.querySelector<HTMLElement>("[data-from-label]")!;
+    const whereLegend = form.querySelector<HTMLElement>("[data-where-legend]")!;
+    let cur = 0;
+
+    fallback.hidden = true;
+    form.hidden = false;
+
+    const val = (n: string) => (form.elements.namedItem(n) as HTMLInputElement | RadioNodeList | null)?.value?.trim() ?? "";
+    const picked = () => [...form.querySelectorAll<HTMLInputElement>("input[name=service]:checked")];
+    const isMove = () => picked().some((i) => i.dataset.id === "moving" || i.dataset.id === "labour");
+
+    function message() {
+      const name = val("name");
+      const lines = [`Hi Muhammed${name ? `, it's ${name}` : ""}. I'd like a quote.`];
+      const svc = picked().map((i) => i.value);
+      if (svc.length) lines.push(`Service: ${svc.join(", ")}`);
+      const from = val("from"), to = val("to");
+      if (isMove() && (from || to)) lines.push(`From ${from || "?"} to ${to || "?"}`);
+      else if (from) lines.push(`Location: ${from}`);
+      if (val("size")) lines.push(`Size: ${val("size")}`);
+      if (val("when")) lines.push(`When: ${val("when")}`);
+      if (val("notes")) lines.push(`Notes: ${val("notes")}`);
+      return lines.join("\n");
+    }
+
+    function sync() {
+      const m = message();
+      preview.textContent = m;
+      smsA.href = `sms:${PHONE}?&body=${encodeURIComponent(m)}`;
+      mailA.href = `mailto:${"mohammed.alii2001@gmail.com"}?subject=${encodeURIComponent("Quote request")}&body=${encodeURIComponent(m)}`;
+      const move = isMove();
+      toField.hidden = !move;
+      fromLabel.textContent = move ? "Moving from" : "Job location";
+      whereLegend.textContent = move ? "Where are you moving?" : "Where's the job?";
+    }
+
+    function go(i: number, dir: 1 | -1) {
+      const prev = steps[cur];
+      cur = i;
+      prev.hidden = true;
+      const s = steps[cur];
+      s.hidden = false;
+      s.dataset.dir = String(dir);
+      s.classList.remove("is-entering"); void s.offsetWidth; s.classList.add("is-entering");
+      bar.style.transform = `scaleX(${(cur + 1) / steps.length})`;
+      count.textContent = `Step ${cur + 1} of ${steps.length}`;
+      back.hidden = cur === 0;
+      next.hidden = cur === steps.length - 1;
+      s.querySelector<HTMLElement>("legend")?.setAttribute("tabindex", "-1");
+      s.querySelector<HTMLElement>("legend")?.focus({ preventScroll: true });
+    }
+
+    form.addEventListener("input", sync);
+    form.addEventListener("change", sync);
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (cur === 0 && picked().length === 0) {
+        const err = form.querySelector<HTMLElement>('[data-err="1"]')!;
+        err.hidden = false;
+        return;
+      }
+      form.querySelector<HTMLElement>('[data-err="1"]')!.hidden = true;
+      if (cur < steps.length - 1) go(cur + 1, 1);
+    });
+    back.addEventListener("click", () => cur > 0 && go(cur - 1, -1));
+    sync();
+    bar.style.transform = `scaleX(${1 / steps.length})`;
+  }
+</script>
+
+<style>
+  .quote { padding: var(--s-9) 0; background: linear-gradient(180deg, var(--ink), var(--ink-2)); }
+  .quote__in { display: grid; grid-template-columns: 5fr 7fr; gap: var(--s-8); align-items: start; }
+  .quote__intro { display: grid; gap: var(--s-4); }
+  .quote__t { font-size: var(--t-2xl); }
+  .quote__lede { color: var(--muted); font-size: var(--t-lg); }
+  .direct { display: grid; gap: var(--s-2); margin-top: var(--s-4); }
+  .direct a { display: flex; align-items: center; gap: var(--s-4); text-decoration: none; padding: var(--s-3) 0; border-bottom: 1px solid var(--line); font-weight: 700; font-size: var(--t-lg); overflow-wrap: anywhere; }
+  .direct .icon { width: 24px; height: 24px; color: var(--orange); flex: none; }
+  .direct small { display: block; font-size: var(--t-xs); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  @media (hover: hover) and (pointer: fine) { .direct a:hover { color: var(--orange); } }
+
+  .panel { background: var(--ink-2); border: 1px solid var(--line); border-radius: 24px; padding: clamp(1.25rem, 3vw, 2.5rem); box-shadow: 0 30px 80px -30px rgb(248 124 26 / .35); }
+  .fallback { display: grid; gap: var(--s-4); }
+  .fallback ol { padding-left: 1.2em; color: var(--muted); display: grid; gap: var(--s-2); }
+  .fallback h3, .qb legend { font-size: var(--t-xl); font-weight: 900; font-variation-settings: "wdth" 112; text-transform: uppercase; line-height: 1; }
+
+  .qb { display: grid; gap: var(--s-5); }
+  .qb__progress { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .qb__progress span { display: block; height: 100%; background: linear-gradient(90deg, var(--yellow), var(--orange)); transform-origin: left; transform: scaleX(.25); transition: transform 400ms var(--ease-out); }
+  .qb__count { font-size: var(--t-xs); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-top: calc(-1 * var(--s-3)); }
+  .qb__step { border: 0; margin: 0; padding: 0; display: grid; gap: var(--s-4); min-width: 0; }
+  .qb__step legend { padding: 0; margin-bottom: var(--s-2); outline: none; }
+  .qb__step.is-entering { animation: step-in 260ms var(--ease-out); }
+  .qb__step.is-entering[data-dir="-1"] { animation-name: step-back; }
+  @keyframes step-in { from { opacity: 0; transform: translateX(16px); } }
+  @keyframes step-back { from { opacity: 0; transform: translateX(-16px); } }
+  @media (prefers-reduced-motion: reduce) { .qb__step.is-entering, .qb__step.is-entering[data-dir="-1"] { animation: fade-only 200ms ease; } @keyframes fade-only { from { opacity: 0; } } }
+  .qb__hint, .qb__sub { color: var(--muted); font-size: var(--t-sm); }
+  .qb__sub { font-weight: 700; color: var(--paper); margin-top: var(--s-2); }
+  .qb__hint a { color: var(--orange); }
+  .qb__err { color: var(--yellow); font-weight: 700; font-size: var(--t-sm); }
+  .chips { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+  .chip { position: relative; }
+  .chip input { position: absolute; opacity: 0; pointer-events: none; }
+  .chip span { display: inline-flex; align-items: center; min-height: 44px; padding: 0 1.1em; border: 1.5px solid var(--line); border-radius: var(--r-pill); font-weight: 700; font-size: var(--t-sm); cursor: pointer; transition: background-color var(--d-ui) ease, border-color var(--d-ui) ease, color var(--d-ui) ease, transform var(--d-press) var(--ease-out); }
+  .chip:active span { transform: scale(0.97); }
+  .chip input:checked + span { background: var(--orange); border-color: var(--orange); color: var(--ink); }
+  .chip input:focus-visible + span { outline: 3px solid var(--yellow); outline-offset: 2px; }
+  @media (hover: hover) and (pointer: fine) { .chip span:hover { border-color: var(--muted); } }
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-4); }
+  .field { display: grid; gap: var(--s-2); font-size: var(--t-sm); font-weight: 700; }
+  .field em { font-style: normal; font-weight: 400; color: var(--muted); }
+  .field--wide { grid-column: 1 / -1; }
+  .field select, .field input, .field textarea { font: inherit; font-weight: 500; font-size: 16px; color: var(--paper); background: var(--ink); border: 1.5px solid var(--line); border-radius: var(--r-2); padding: 0.8em 0.9em; min-height: 48px; width: 100%; }
+  .field select:focus, .field input:focus, .field textarea:focus { border-color: var(--orange); outline: none; }
+  .bubble { white-space: pre-line; background: var(--orange); color: var(--ink); font-weight: 600; padding: var(--s-4) var(--s-5); border-radius: 22px 22px 6px 22px; max-width: 34ch; justify-self: end; line-height: 1.45; }
+  .qb__send { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+  .qb__nav { display: flex; justify-content: space-between; gap: var(--s-3); }
+  .qb__nav [data-qb-next] { margin-left: auto; }
+  @media (max-width: 900px) { .quote__in { grid-template-columns: 1fr; gap: var(--s-7); } }
+  @media (max-width: 520px) { .fields { grid-template-columns: 1fr; } }
+</style>

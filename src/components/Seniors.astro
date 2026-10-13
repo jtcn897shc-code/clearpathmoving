@@ -1,0 +1,29 @@
+---
+import { seniors, business } from "../data/site";
+---
+<section class="seniors">
+  <div class="wrap seniors__in">
+    <div data-reveal>
+      <p class="eyebrow">{seniors.eyebrow}</p>
+      <h2 class="display seniors__t">{seniors.headline}</h2>
+    </div>
+    <div class="seniors__body" data-reveal style="--i:1">
+      {seniors.body.map((p) => <p>{p}</p>)}
+      <figure class="quote">
+        <blockquote>“{business.ownerQuote}”</blockquote>
+        <figcaption>{business.owner}, {business.ownerRole}</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+<style>
+  .seniors { padding: var(--s-9) 0; background: var(--paper); color: var(--ink); }
+  .seniors .eyebrow { color: var(--ember); }
+  .seniors__in { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-8); align-items: start; }
+  .seniors__t { font-size: var(--t-2xl); }
+  .seniors__body { display: grid; gap: var(--s-4); font-size: var(--t-lg); color: var(--muted-paper); }
+  .quote { margin: var(--s-4) 0 0; padding-left: var(--s-5); border-left: 4px solid var(--orange); }
+  .quote blockquote { margin: 0; font-size: var(--t-xl); font-weight: 800; color: var(--ink); line-height: 1.15; }
+  .quote figcaption { margin-top: var(--s-3); font-size: var(--t-sm); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ember); }
+  @media (max-width: 860px) { .seniors__in { grid-template-columns: 1fr; gap: var(--s-6); } }
+</style>

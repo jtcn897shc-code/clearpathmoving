@@ -1,0 +1,21 @@
+---
+import { facts } from "../data/site";
+---
+<section class="facts" aria-label="At a glance">
+  <ul class="wrap facts__grid">
+    {facts.map((f, i) => (
+      <li class="fact" data-reveal style={`--i:${i}`}>
+        <span class="fact__v">{f.value}</span>
+        <span class="fact__l">{f.label}</span>
+      </li>
+    ))}
+  </ul>
+</section>
+<style>
+  .facts { padding: var(--s-8) 0; }
+  .facts__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s-4); }
+  .fact { background: var(--ink-2); border: 1px solid var(--line); border-radius: var(--r-2); padding: var(--s-5); text-align: center; display: grid; gap: var(--s-2); }
+  .fact__v { font-size: var(--t-xl); font-weight: 900; color: var(--orange); }
+  .fact__l { font-size: var(--t-sm); color: var(--muted); }
+  @media (max-width: 800px) { .facts__grid { grid-template-columns: 1fr 1fr; } }
+</style>

@@ -1,0 +1,78 @@
+@import "./tokens.css";
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 88px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font);
+  font-size: var(--t-md);
+  line-height: 1.55;
+  font-variation-settings: "wdth" 100;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; }
+h1, h2, h3 { margin: 0; line-height: 1; letter-spacing: -0.01em; }
+p { margin: 0; }
+ul { margin: 0; padding: 0; list-style: none; }
+:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; border-radius: 2px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.wrap { width: min(100% - 2 * var(--gutter), var(--max)); margin-inline: auto; }
+
+.eyebrow {
+  font-size: var(--t-xs);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--orange);
+  font-variation-settings: "wdth" 112;
+}
+.display {
+  font-weight: 900;
+  font-variation-settings: "wdth" 112;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+}
+
+/* Buttons */
+.btn {
+  --bg: var(--orange); --fg: var(--ink);
+  display: inline-flex; align-items: center; gap: 0.6em;
+  min-height: 52px; padding: 0 1.4em;
+  background: var(--bg); color: var(--fg);
+  font: 800 var(--t-sm)/1 var(--font);
+  font-variation-settings: "wdth" 110;
+  letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none;
+  border: 2px solid var(--bg); border-radius: var(--r-1);
+  cursor: pointer;
+  transition: background-color var(--d-ui) ease, color var(--d-ui) ease, border-color var(--d-ui) ease, transform var(--d-press) var(--ease-out);
+}
+.btn:active { transform: scale(0.97); }
+.btn svg { width: 1.15em; height: 1.15em; flex: none; }
+.btn--ghost { --bg: transparent; --fg: var(--paper); border-color: color-mix(in srgb, var(--paper) 35%, transparent); }
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover { --bg: var(--orange-hi); }
+  .btn--ghost:hover { --bg: var(--paper); --fg: var(--ink); border-color: var(--paper); }
+  .btn:hover .arrow { transform: translateX(3px); }
+}
+.arrow { transition: transform var(--d-ui) var(--ease-out); }
+
+/* Reveal-on-scroll.
+ * Visible by default. Only hidden once the inline head script has added
+ * .js to <html>, so a JS failure shows the whole page. */
+.js [data-reveal] { opacity: 0; transform: translateY(24px); }
+.js [data-reveal].is-in {
+  opacity: 1; transform: none;
+  transition: opacity var(--d-reveal) var(--ease-out), transform var(--d-reveal) var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 60ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal] { transform: none; }
+  .js [data-reveal].is-in { transition: opacity 300ms ease; transition-delay: 0ms; }
+}

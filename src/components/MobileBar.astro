@@ -1,0 +1,31 @@
+---
+import Icon from "./Icon.astro";
+import { tel, sms } from "../data/site";
+---
+<!-- Phones only: the two highest-intent actions stay one thumb away after the hero. -->
+<nav class="mbar" aria-label="Quick contact" data-mbar>
+  <a href={tel}><Icon name="phone" />Call</a>
+  <a href={sms("Hi Muhammed, I'd like a quote for ")}><Icon name="chat" />Text</a>
+  <a href="#quote" class="mbar__quote">Get a quote<Icon name="arrow" /></a>
+</nav>
+<script>
+  const bar = document.querySelector<HTMLElement>("[data-mbar]");
+  const heroEl = document.getElementById("top");
+  if (bar && heroEl && "IntersectionObserver" in window) {
+    bar.classList.add("is-armed");
+    new IntersectionObserver(([e]) => bar.classList.toggle("is-shown", !e.isIntersecting), { threshold: 0.15 }).observe(heroEl);
+  }
+</script>
+<style>
+  .mbar { display: none; }
+  @media (max-width: 760px) {
+    .mbar { position: fixed; z-index: 60; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: 1fr 1fr 1.6fr; gap: 1px; background: var(--line); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); transition: transform 300ms var(--ease-out); }
+    .mbar.is-armed { transform: translateY(110%); }
+    .mbar.is-armed.is-shown { transform: none; }
+    .mbar a { display: flex; align-items: center; justify-content: center; gap: .45em; min-height: 60px; background: var(--ink-2); text-decoration: none; font-weight: 800; font-size: var(--t-sm); }
+    .mbar .icon { width: 1.1em; height: 1.1em; color: var(--orange); }
+    .mbar__quote { background: var(--orange) !important; color: var(--ink); }
+    .mbar__quote .icon { color: var(--ink); }
+  }
+  @media (prefers-reduced-motion: reduce) { .mbar { transition: opacity 200ms ease; } .mbar.is-armed { transform: none; opacity: 0; pointer-events: none; } .mbar.is-armed.is-shown { opacity: 1; pointer-events: auto; } }
+</style>

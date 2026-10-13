@@ -1,0 +1,44 @@
+---
+import { Image } from "astro:assets";
+import Icon from "./Icon.astro";
+import { services } from "../data/site";
+import { images } from "../data/images";
+---
+<section class="services" id="services">
+  <div class="wrap">
+    <header class="head" data-reveal>
+      <p class="eyebrow">What we do</p>
+      <h2 class="display head__t">Everything between the old place and the new one.</h2>
+    </header>
+    <ul class="grid">
+      {services.map((s, i) => (
+        <li class="card" data-reveal style={`--i:${i % 3}`}>
+          {s.image && <Image class="card__img" src={images[s.image].src!} alt={images[s.image].alt} widths={[480, 800]} sizes="(max-width: 800px) 100vw, 33vw" />}
+          <div class="card__body">
+            <p class="eyebrow">{s.kicker}</p>
+            <h3>{s.name}</h3>
+            <p>{s.body}</p>
+            {s.includes.length > 0 && <ul class="card__list">{s.includes.map((x) => <li><Icon name="check" />{x}</li>)}</ul>}
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+<style>
+  .services { padding: var(--s-9) 0; }
+  .head { text-align: center; max-width: 820px; margin: 0 auto var(--s-7); display: grid; gap: var(--s-4); }
+  .head__t { font-size: var(--t-2xl); }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-5); }
+  .card { background: var(--ink-2); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px -20px rgb(0 0 0 / .6); transition: transform var(--d-ui) var(--ease-out), border-color var(--d-ui) ease; }
+  @media (hover: hover) and (pointer: fine) { .card:hover { transform: translateY(-4px); border-color: var(--orange); } }
+  .card__img { aspect-ratio: 4/3; object-fit: cover; width: 100%; }
+  .card__body { padding: var(--s-5); display: grid; gap: var(--s-3); }
+  .card h3 { font-size: var(--t-lg); font-weight: 800; }
+  .card p:not(.eyebrow) { color: var(--muted); font-size: var(--t-sm); }
+  .card__list { display: grid; gap: var(--s-2); font-size: var(--t-sm); }
+  .card__list li { display: flex; gap: 0.5em; align-items: center; }
+  .card__list .icon { width: 1em; color: var(--orange); }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,48 @@
+---
+import { route, homeBase, allCities } from "../data/site";
+---
+<section class="area" id="area">
+  <div class="wrap area__in">
+    <div class="area__intro" data-reveal>
+      <p class="eyebrow">Service area</p>
+      <h2 class="display area__t">Hope to West Van. One clear path.</h2>
+      <p class="area__lede">Based in {homeBase}, working the whole Highway 1 corridor: {allCities.length} cities across the Fraser Valley and Metro Vancouver. If your move starts or ends on this line, we cover it.</p>
+    </div>
+    <ol class="route" aria-label={`Cities served, ${allCities.length} total`}>
+      {route.map((seg) => (
+        <li class="seg">
+          <p class="seg__zone">{seg.zone}</p>
+          <ol class="seg__stops">
+            {seg.stops.map((c) => <li class:list={["stop", c === homeBase && "stop--home"]}>{c}{c === homeBase && <span class="stop__tag">Home base</span>}</li>)}
+          </ol>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+<style>
+  .area { padding: var(--s-9) 0; }
+  .area__in { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-8); }
+  .area__intro { position: sticky; top: 120px; align-self: start; display: grid; gap: var(--s-4); }
+  .area__t { font-size: var(--t-2xl); }
+  .area__lede { color: var(--muted); font-size: var(--t-lg); max-width: 40ch; }
+  .route { list-style: none; margin: 0; padding: 0 0 0 var(--s-6); position: relative; display: grid; gap: var(--s-6); }
+  .route::before { content: ""; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 3px; background: var(--line); }
+  .route::after { content: ""; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 3px; background: linear-gradient(var(--yellow), var(--orange)); transform-origin: top; }
+  .seg__zone { font-size: var(--t-xs); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: var(--s-3); }
+  .seg__stops { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-2); }
+  .stop { position: relative; font-size: var(--t-lg); font-weight: 700; display: flex; align-items: center; gap: var(--s-3); }
+  .stop::before { content: ""; position: absolute; left: calc(-1 * var(--s-6) + 3px); width: 11px; height: 11px; border-radius: 50%; background: var(--ink); border: 3px solid var(--orange); }
+  .stop--home { color: var(--orange); }
+  .stop--home::before { background: var(--orange); box-shadow: 0 0 0 6px rgb(248 124 26 / .25); }
+  .stop__tag { font-size: var(--t-xs); font-weight: 800; letter-spacing: .1em; text-transform: uppercase; background: var(--orange); color: var(--ink); padding: 3px 8px; border-radius: var(--r-1); }
+  /* Scroll-driven draw of the route line (progressive: line is fully drawn where unsupported). */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .route { view-timeline: --route block; }
+      .route::after { animation: draw linear both; animation-timeline: --route; animation-range: entry 20% cover 70%; }
+      @keyframes draw { from { transform: scaleY(0); } }
+    }
+  }
+  @media (max-width: 860px) { .area__in { grid-template-columns: 1fr; gap: var(--s-7); } .area__intro { position: static; } }
+</style>

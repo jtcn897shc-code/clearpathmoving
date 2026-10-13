@@ -1,0 +1,31 @@
+---
+import { steps } from "../data/site";
+---
+<section class="steps" id="how">
+  <div class="wrap">
+    <header class="head" data-reveal>
+      <p class="eyebrow">How it works</p>
+      <h2 class="display head__t">Three steps. No runaround.</h2>
+    </header>
+    <ol class="list">
+      {steps.map((s, i) => (
+        <li class="step" data-reveal style={`--i:${i}`}>
+          <span class="step__n">{s.n}</span>
+          <h3>{s.title}</h3>
+          <p>{s.body}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+<style>
+  .steps { padding: var(--s-9) 0; background: radial-gradient(ellipse at top, rgb(248 124 26 / .12), transparent 60%); }
+  .head { text-align: center; margin: 0 auto var(--s-7); display: grid; gap: var(--s-4); }
+  .head__t { font-size: var(--t-2xl); }
+  .list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-5); }
+  .step { background: rgb(255 255 255 / .04); backdrop-filter: blur(10px); border: 1px solid rgb(255 255 255 / .08); border-radius: 20px; padding: var(--s-6); text-align: center; display: grid; gap: var(--s-3); }
+  .step__n { font-size: var(--t-xl); font-weight: 900; color: var(--orange); }
+  .step h3 { font-size: var(--t-lg); font-weight: 800; }
+  .step p { color: var(--muted); font-size: var(--t-sm); }
+  @media (max-width: 800px) { .list { grid-template-columns: 1fr; } }
+</style>
