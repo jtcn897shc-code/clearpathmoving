@@ -1,0 +1,39 @@
+---
+import { Image } from "astro:assets";
+import logo from "../assets/brand/logo-full.png";
+import { business, tel, sms, mailto, allCities, nav } from "../data/site";
+const year = new Date().getFullYear();
+---
+<footer class="foot">
+  <div class="wrap foot__in">
+    <Image class="foot__logo" src={logo} alt={business.name} width={320} height={171} />
+    <div class="foot__col">
+      <p class="eyebrow">Contact</p>
+      <a href={tel}>Call {business.phoneDisplay}</a>
+      <a href={sms()}>Text {business.phoneDisplay}</a>
+      <a href={mailto("Quote request")}>{business.email}</a>
+      <p class="foot__muted">Open {business.hours.short}<br />Based in {business.base}</p>
+    </div>
+    <div class="foot__col">
+      <p class="eyebrow">Explore</p>
+      {nav.map((l) => <a href={l.href}>{l.label}</a>)}
+    </div>
+    <p class="foot__cities"><span class="eyebrow">Serving</span> {allCities.join(" · ")}</p>
+  </div>
+  <div class="wrap foot__base"><p>© {year} {business.name}</p></div>
+</footer>
+<style>
+  .foot { border-top: 1px solid var(--line); padding: var(--s-8) 0 calc(var(--s-6) + 72px); background: var(--ink); }
+  .foot__in { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: var(--s-7); }
+  .foot__logo { width: 260px; height: auto; }
+  .foot__col { display: grid; gap: var(--s-2); align-content: start; }
+  .foot__col a { text-decoration: none; font-weight: 600; overflow-wrap: anywhere; }
+  .foot__col a[href^=tel], .foot__col a[href^=sms] { white-space: nowrap; }
+  @media (hover: hover) and (pointer: fine) { .foot__col a:hover { color: var(--orange); } }
+  .foot__muted { color: var(--muted); font-size: var(--t-sm); margin-top: var(--s-2); }
+  .foot__cities { grid-column: 1 / -1; color: var(--muted); font-size: var(--t-sm); }
+  .foot__cities .eyebrow { margin-right: .5em; }
+  .foot__base { margin-top: var(--s-6); color: var(--muted); font-size: var(--t-xs); }
+  @media (min-width: 761px) { .foot { padding-bottom: var(--s-6); } }
+  @media (max-width: 760px) { .foot__in { grid-template-columns: 1fr; } .foot__logo { grid-column: 1 / -1; width: 220px; } }
+</style>

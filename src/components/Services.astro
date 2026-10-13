@@ -1,0 +1,125 @@
+---
+import { Image } from "astro:assets";
+import Icon from "./Icon.astro";
+import { services } from "../data/site";
+import { images } from "../data/images";
+// Layout follows business weight, not a uniform grid:
+// primary = photo-led feature, secondary = full-width band, tertiary = ruled index.
+const primary = services.filter((s) => s.weight === "primary");
+const secondary = services.filter((s) => s.weight === "secondary");
+const tertiary = services.filter((s) => s.weight === "tertiary");
+---
+<section class="services" id="services">
+  <div class="wrap">
+    <header class="sechead sechead--split" data-reveal>
+      <p class="label"><b>01</b> What we do</p>
+      <h2 class="display">Everything between the old place and the new one.</h2>
+      <p>The three jobs people call us for most, plus the work that makes a move actually finished.</p>
+    </header>
+
+    <div class="primary">
+      {primary.map((s, i) => (
+        <article class:list={["feature", `feature--${i}`]}>
+          <div class="photo feature__photo" data-reveal>
+            <Image src={images[s.image!].src!} alt={images[s.image!].alt} widths={[560, 900, 1200]} sizes="(max-width: 860px) 100vw, 58vw" />
+            <span class="photo__note">Representative photo</span>
+          </div>
+          <div class="feature__body">
+            <p class="feature__kicker">{s.kicker}</p>
+            <h3>{s.name}</h3>
+            <p class="feature__copy">{s.body}</p>
+            <ul class="ticks">{s.includes.map((x) => <li><Icon name="check" />{x}</li>)}</ul>
+            {s.cta && <a class="link" href="#quote" data-pick={s.id}>{s.cta}<Icon name="arrow" /></a>}
+          </div>
+        </article>
+      ))}
+    </div>
+
+    {secondary.map((s) => (
+      <article class="band">
+        <div class="band__head">
+          <p class="feature__kicker">{s.kicker}</p>
+          <h3 class="display">{s.name}</h3>
+        </div>
+        <div class="band__body">
+          <p>{s.body}</p>
+          <ul class="ticks">{s.includes.map((x) => <li><Icon name="check" />{x}</li>)}</ul>
+          {s.cta && <a class="btn" href="#quote" data-pick={s.id}>{s.cta}<Icon name="arrow" /></a>}
+        </div>
+      </article>
+    ))}
+
+    <div class="extras">
+      <p class="label">Also on the job</p>
+      <ol class="index">
+        {tertiary.map((s, i) => (
+          <li class="row">
+            <span class="row__n">0{i + 1}</span>
+            <div class="row__text">
+              <h3>{s.name}</h3>
+              <p>{s.body}</p>
+            </div>
+            {s.image
+              ? <div class="photo row__thumb"><Image src={images[s.image].src!} alt={images[s.image].alt} widths={[240, 480]} sizes="200px" /></div>
+              : <span class="row__thumb row__thumb--empty" aria-hidden="true"><span class="speed"><i></i><i></i></span></span>}
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Service CTAs preselect that service in the quote builder.
+  document.querySelectorAll<HTMLAnchorElement>("[data-pick]").forEach((a) =>
+    a.addEventListener("click", () => {
+      const box = document.querySelector<HTMLInputElement>(`input[name=service][data-id="${a.dataset.pick}"]`);
+      if (box && !box.checked) { box.checked = true; box.dispatchEvent(new Event("change", { bubbles: true })); }
+    })
+  );
+</script>
+
+<style>
+  .services { padding: var(--s-9) 0; }
+
+  .primary { display: grid; grid-template-columns: 7fr 5fr; gap: var(--s-6); align-items: start; }
+  .feature { display: grid; gap: var(--s-5); }
+  .feature__photo { aspect-ratio: 16 / 10; border-radius: var(--r); }
+  .feature--1 { margin-top: var(--s-9); } /* stagger the pair so it reads as a sequence, not a grid */
+  .feature--1 .feature__photo { aspect-ratio: 4 / 5; }
+  .feature__body { display: grid; gap: var(--s-3); justify-items: start; }
+  .feature__kicker { font-size: var(--t-xs); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--orange); font-variation-settings: "wdth" 112; }
+  .feature h3 { font-size: var(--t-xl); font-weight: 900; font-variation-settings: "wdth" 112; text-transform: uppercase; letter-spacing: -0.01em; }
+  .feature__copy { color: var(--muted); max-width: 48ch; }
+
+  .ticks { display: grid; gap: var(--s-2); font-size: var(--t-sm); font-weight: 600; }
+  .ticks li { display: flex; gap: 0.6em; align-items: baseline; }
+  .ticks .icon { color: var(--orange); transform: translateY(0.15em); }
+
+  .link { display: inline-flex; align-items: center; gap: .5em; margin-top: var(--s-2); min-height: 44px; font-weight: 800; font-size: var(--t-sm); letter-spacing: .06em; text-transform: uppercase; text-decoration: none; color: var(--orange); border-bottom: 2px solid currentColor; }
+  @media (hover: hover) and (pointer: fine) { .link:hover .arrow { transform: translateX(4px); } .link:hover { color: var(--orange-hi); } }
+
+  .band { margin-top: var(--s-9); display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-7); padding: var(--s-7) 0; border-block: 1px solid var(--line); }
+  .band__head { display: grid; gap: var(--s-3); align-content: start; }
+  .band h3 { font-size: var(--t-2xl); max-width: 12ch; }
+  .band__body { display: grid; gap: var(--s-4); justify-items: start; color: var(--muted); font-size: var(--t-lg); }
+  .band__body .ticks { color: var(--paper); }
+
+  .extras { margin-top: var(--s-8); display: grid; gap: var(--s-4); }
+  .index { list-style: none; margin: 0; padding: 0; }
+  .row { display: grid; grid-template-columns: 56px 1fr 200px; gap: var(--s-5); align-items: center; padding: var(--s-5) 0; border-bottom: 1px solid var(--line); }
+  .row__n { font-weight: 800; color: var(--orange); font-variant-numeric: tabular-nums; font-size: var(--t-sm); }
+  .row h3 { font-size: var(--t-lg); font-weight: 800; font-variation-settings: "wdth" 112; }
+  .row p { color: var(--muted); font-size: var(--t-sm); max-width: 52ch; margin-top: var(--s-1); }
+  .row__thumb { aspect-ratio: 16 / 9; border-radius: var(--r); }
+  .row__thumb--empty { display: grid; place-items: center; background: var(--ink-2); font-size: 22px; }
+
+  @media (max-width: 860px) {
+    .primary, .band { grid-template-columns: 1fr; }
+    .feature--1 { margin-top: var(--s-5); }
+    .feature--1 .feature__photo { aspect-ratio: 16 / 10; }
+    .band { gap: var(--s-5); margin-top: var(--s-8); }
+    .row { grid-template-columns: 40px 1fr; }
+    .row__thumb { display: none; }
+  }
+</style>

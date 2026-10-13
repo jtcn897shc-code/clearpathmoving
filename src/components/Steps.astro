@@ -1,0 +1,59 @@
+---
+import { steps } from "../data/site";
+---
+<section class="steps" id="how">
+  <div class="wrap">
+    <header class="sechead" data-reveal>
+      <p class="label"><b>02</b> How it works</p>
+      <h2 class="display">Three stops. No runaround.</h2>
+    </header>
+    <!-- The route line draws as the section scrolls through: it explains sequence. -->
+    <ol class="path">
+      {steps.map((s, i) => (
+        <li class="stop" style={`--i:${i}`}>
+          <span class="stop__dot" aria-hidden="true"></span>
+          <span class="stop__n">{s.n}</span>
+          <h3>{s.title}</h3>
+          <p>{s.body}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+<style>
+  .steps { padding: var(--s-9) 0; border-top: 1px solid var(--line); }
+  .path { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); position: relative; }
+  /* Track + drawn line, through the dots' centres */
+  .path::before, .path::after { content: ""; position: absolute; left: 0; right: 0; top: 9px; height: 3px; background: var(--line); }
+  .path::after { background: linear-gradient(90deg, var(--yellow), var(--orange)); transform-origin: left; }
+  .stop { position: relative; display: grid; gap: var(--s-3); align-content: start; padding-right: var(--s-6); }
+  .stop__dot { width: 21px; height: 21px; border-radius: 50%; background: var(--ink); border: 3px solid var(--orange); position: relative; z-index: 1; margin-bottom: var(--s-4); }
+  .stop:last-child .stop__dot { background: var(--orange); }
+  .stop__n { font-size: var(--t-2xl); font-weight: 900; font-style: italic; font-variation-settings: "wdth" 125; color: var(--orange); line-height: .9; }
+  .stop h3 { font-size: var(--t-lg); font-weight: 800; font-variation-settings: "wdth" 112; }
+  .stop p { color: var(--muted); max-width: 32ch; }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .path { view-timeline: --path block; }
+      .path::after { animation: draw-x linear both; animation-timeline: --path; animation-range: entry 30% cover 55%; }
+      .stop { animation: stop-in linear both; animation-timeline: --path; animation-range: entry calc(30% + var(--i) * 12%) cover calc(35% + var(--i) * 10%); }
+      @keyframes draw-x { from { transform: scaleX(0); } }
+      @keyframes stop-in { from { opacity: .25; } }
+    }
+  }
+
+  @media (max-width: 760px) {
+    .path { grid-template-columns: 1fr; gap: var(--s-6); padding-left: var(--s-7); }
+    .path::before, .path::after { left: 9px; right: auto; top: 0; bottom: 0; width: 3px; height: auto; }
+    .path::after { transform-origin: top; }
+    .stop { padding-right: 0; }
+    .stop__dot { position: absolute; left: calc(-1 * var(--s-7)); top: 0; margin: 0; }
+    @supports (animation-timeline: view()) {
+      @media (prefers-reduced-motion: no-preference) {
+        .path::after { animation-name: draw-y; animation-range: entry 40% cover 60%; }
+        @keyframes draw-y { from { transform: scaleY(0); } }
+      }
+    }
+  }
+</style>

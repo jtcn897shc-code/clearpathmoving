@@ -1,0 +1,15 @@
+---
+// One icon set, one stroke weight (2px, square caps) so every glyph matches.
+interface Props { name: "phone" | "chat" | "arrow" | "mail" | "check" | "clock" | "pin"; class?: string }
+const { name, class: cls } = Astro.props;
+const paths: Record<Props["name"], string> = {
+  phone: '<path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2"/>',
+  chat: '<path d="M4 5h16v11H9l-5 4z"/>',
+  arrow: '<path d="M4 12h15M13 6l6 6-6 6"/>',
+  mail: '<path d="M3 5h18v14H3z"/><path d="m3 6 9 7 9-7"/>',
+  check: '<path d="m4 12 5 5L20 6"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  pin: '<path d="M12 21s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/>',
+};
+---
+<svg class:list={["icon", cls, name === "arrow" && "arrow"]} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true" set:html={paths[name]} />
