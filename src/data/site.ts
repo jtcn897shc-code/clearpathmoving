@@ -60,7 +60,7 @@ export type Service = {
   body: string;
   includes: string[];
   cta?: string;
-  image?: "hero" | "junk" | "yard" | "paint";
+  image?: "moving" | "junk" | "yard" | "paint";
   weight: "primary" | "secondary" | "tertiary";
 };
 
@@ -73,7 +73,7 @@ export const services: Service[] = [
     body: "Truck, crew and the heavy lifting. We load, move and unload, take apart what won't fit through a door and put it back together on the other side.",
     includes: ["Loading & unloading", "Furniture disassembly & reassembly", "Local and Lower Mainland moves"],
     cta: "Quote a move",
-    image: "hero",
+    image: "moving",
     weight: "primary",
   },
   {
@@ -171,6 +171,41 @@ export const quote = {
 export const nav = [
   { href: "#services", label: "Services" },
   { href: "#how", label: "How it works" },
+  { href: "#reviews", label: "Reviews" },
   { href: "#area", label: "Service area" },
   { href: "#quote", label: "Quote" },
 ];
+
+/**
+ * Real Google reviews (client screenshot of the ClearPath Google Business
+ * Profile, 2026-10-27; posted 8–9 months earlier). Text is VERBATIM up to
+ * where Google truncated it with "more"; nothing is completed or paraphrased.
+ * Reviewer surnames shortened to an initial.
+ * TODO: get the full review text (or the GBP review links) from the client.
+ */
+export const reviews = {
+  googleUrl: "https://www.google.com/maps/search/?api=1&query=ClearPath+Moving+%26+Junk+Solutions+Abbotsford+BC",
+  items: [
+    {
+      name: "Shabana M.",
+      meta: "Local Guide · Google review",
+      stars: 5,
+      text: "Thank you so much for an excellent moving service you guys provided for us today. We really appreciate your fast and efficient service. Excellent rate and exemplary",
+      truncated: true,
+    },
+    {
+      name: "Imad",
+      meta: "Google review",
+      stars: 5,
+      text: "Clear Path Moving & Junk Solutions did an amazing job. Moe was very professional, punctual, and careful with all items. Everything was handled smoothly from start",
+      truncated: true,
+    },
+    {
+      name: "Kabul S.",
+      meta: "Google review",
+      stars: 5,
+      text: "Highly recommended. I am a student and I needed a moving company. Moe showed up with his crew Got the job done professionally and the prices were",
+      truncated: true,
+    },
+  ],
+};

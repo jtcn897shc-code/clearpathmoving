@@ -30,6 +30,13 @@ Archivo variable, one family:
 - No drop-shadows, glows, glass or decorative gradients. Depth comes from
   ground colour and 1px `--line` rules.
 - One decorative motif: the logo's two speed-lines (`.speed`, skewed -12°).
+- Square corners extend to the reviews carousel; the only rounded shapes stay
+  semantic (route stops, the text-message bubble).
+
+## Reviews
+- Real reviews only, verbatim, truncation shown with an ellipsis and a link out.
+- Surnames shortened to an initial. Avatars are initials, never stock faces.
+- No overall rating, review count or `aggregateRating` until the full profile is known.
 
 ## Layout
 - Left-aligned everywhere. Asymmetric splits (7/5) over equal grids.
@@ -44,6 +51,9 @@ Archivo variable, one family:
 | Route / steps line | Explanation | Scroll-driven animation | Scroll-linked, linear |
 | Quote steps | State change | CSS animation (class re-add) | 260ms `--ease-out` |
 | Buttons | Feedback | CSS transition | 140ms scale .97 |
+| Hero photo wipe | Spatial (first view) | CSS animation | 1300ms `--ease-in-out` |
+| Review cards focus | Feedback (where you are in the track) | Scroll-driven, inline view timeline | Scroll-linked |
+| Review stars | Delight | Scroll-driven, staggered per star | Scroll-linked |
 
 Every animation has a reduced-motion variant (fade only) and a no-JS state
 (fully visible). Hover effects are gated behind `(hover: hover) and (pointer: fine)`.
