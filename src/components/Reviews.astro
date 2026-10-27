@@ -1,0 +1,248 @@
+---
+import { Image } from "astro:assets";
+import Icon from "./Icon.astro";
+import { reviews } from "../data/site";
+import { images } from "../data/images";
+const [r1, r2, r3] = reviews.items;
+const moeMentions = reviews.items.filter((r) => /\bMoe\b/.test(r.text)).length;
+const star = "M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z";
+type R = (typeof reviews.items)[number];
+---
+<section class="reviews" id="reviews" aria-labelledby="reviews-title">
+  <div class="wrap">
+    <header class="rhead" data-reveal>
+      <p class="label"><b>03</b> Reviews</p>
+      <h2 class="display" id="reviews-title">What our <span class="mute">customers</span> say</h2>
+      <div class="rhead__side">
+        <p class="rhead__note">Real Google reviews, quoted word for word.</p>
+        <div class="ctrl" data-rv-ctrl hidden>
+          <span class="ctrl__count" aria-hidden="true"><b data-rv-cur>01</b> / <span data-rv-total>07</span></span>
+          <button type="button" class="ctrl__btn" data-rv-prev aria-label="Previous"><Icon name="arrow" class="flip" /></button>
+          <button type="button" class="ctrl__btn" data-rv-next aria-label="Next"><Icon name="arrow" /></button>
+        </div>
+      </div>
+    </header>
+  </div>
+
+  <div class="track" data-rv-track tabindex="0" role="region" aria-label="Customer reviews and job photos, scrolls sideways">
+    {[r1, "photo:loadedTruck", r2, "moe", r3, "photo:rampTruck", "end"].map((item) => {
+      if (typeof item !== "string") {
+        const r = item as R;
+        return (
+          <article class="card rv">
+            <header class="rv__top">
+              <span class="rv__avatar" aria-hidden="true">{r.name[0]}</span>
+              <span class="rv__tag">Google review</span>
+            </header>
+            <span class="rv__mark" aria-hidden="true">“</span>
+            <p class="rv__stars" role="img" aria-label={`${r.stars} out of 5 stars`}>
+              {Array.from({ length: r.stars }, (_, i) => <svg viewBox="0 0 24 24" style={`--s:${i}`} aria-hidden="true"><path d={star} /></svg>)}
+            </p>
+            <blockquote class="rv__text">{r.text}{r.truncated && <span class="rv__cut">…</span>}</blockquote>
+            <footer class="rv__by">
+              <b>{r.name}</b>
+              <span>{r.meta}</span>
+              {r.truncated && <a href={reviews.googleUrl} target="_blank" rel="noopener">Full review on Google<span class="sr-only"> (opens in a new tab)</span></a>}
+            </footer>
+          </article>
+        );
+      }
+      if (item.startsWith("photo:")) {
+        const key = item.slice(6) as "loadedTruck" | "rampTruck";
+        const cap = key === "loadedTruck" ? ["Oversized-item moving", "Bed frames, mattresses and a sofa, loaded and ready to roll."] : ["Ramp down, ready to load", "Open from 6 am, seven days a week."];
+        return (
+          <figure class="card ph">
+            <Image src={images[key].src} alt={images[key].alt} widths={[400, 700]} sizes="(max-width: 600px) 82vw, 420px" />
+            <figcaption><span class="ph__k">On the job</span><b>{cap[0]}</b><span>{cap[1]}</span></figcaption>
+          </figure>
+        );
+      }
+      if (item === "moe") {
+        return (
+          <aside class="card moe" aria-label="A name that keeps coming up">
+            <p class="moe__k">A name that keeps coming up</p>
+            <p class="moe__name">Moe<span class="speed"><i></i><i></i></span></p>
+            <p class="moe__stat"><b>{moeMentions} of {reviews.items.length}</b> reviews here mention him by name.</p>
+            <ul class="moe__words" aria-label="How they describe him">
+              <li>professional</li><li>punctual</li><li>careful</li>
+            </ul>
+            <p class="moe__src">Their words, from Imad's review.</p>
+          </aside>
+        );
+      }
+      return (
+        <div class="card end">
+          <p class="end__k">That's the short version</p>
+          <p class="end__t">Read every review on Google, then get your quote.</p>
+          <div class="end__ctas">
+            <a class="btn btn--ink" href={reviews.googleUrl} target="_blank" rel="noopener">All reviews<span class="sr-only"> on Google (opens in a new tab)</span><Icon name="arrow" class="up" /></a>
+            <a class="btn btn--ink-ghost" href="#quote">Get a quote</a>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+  <div class="wrap"><div class="bar" aria-hidden="true"><span data-rv-bar></span></div></div>
+</section>
+
+<script>
+  const track = document.querySelector<HTMLElement>("[data-rv-track]");
+  const ctrl = document.querySelector<HTMLElement>("[data-rv-ctrl]");
+  if (track && ctrl) {
+    const cards = [...track.querySelectorAll<HTMLElement>(".card")];
+    const prev = ctrl.querySelector<HTMLButtonElement>("[data-rv-prev]")!;
+    const next = ctrl.querySelector<HTMLButtonElement>("[data-rv-next]")!;
+    const cur = ctrl.querySelector<HTMLElement>("[data-rv-cur]")!;
+    const bar = document.querySelector<HTMLElement>("[data-rv-bar]")!;
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+    const pad = (n: number) => String(n).padStart(2, "0");
+    ctrl.querySelector<HTMLElement>("[data-rv-total]")!.textContent = pad(cards.length);
+    ctrl.hidden = false;
+
+    const step = () => cards[0].getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || "0");
+    const go = (dir: number) => track.scrollBy({ left: dir * step(), behavior: reduce.matches ? "auto" : "smooth" });
+    prev.addEventListener("click", () => go(-1));
+    next.addEventListener("click", () => go(1));
+
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const max = track.scrollWidth - track.clientWidth;
+      const p = max > 0 ? track.scrollLeft / max : 1;
+      bar.style.transform = `scaleX(${Math.max(0.06, p)})`;
+      const idx = Math.min(cards.length - 1, Math.round(track.scrollLeft / step()));
+      cur.textContent = pad(p > 0.995 ? cards.length : idx + 1);
+      prev.disabled = track.scrollLeft < 4;
+      next.disabled = track.scrollLeft > max - 4;
+    };
+    track.addEventListener("scroll", () => { if (!raf) raf = requestAnimationFrame(update); }, { passive: true });
+    addEventListener("resize", update);
+    update();
+
+    // Mouse drag to scroll (touch and trackpads already scroll natively).
+    let down = false, startX = 0, startLeft = 0, moved = false;
+    track.addEventListener("pointerdown", (e) => {
+      if (e.pointerType !== "mouse" || e.button !== 0) return;
+      down = true; moved = false; startX = e.clientX; startLeft = track.scrollLeft;
+    });
+    addEventListener("pointermove", (e) => {
+      if (!down) return;
+      const dx = e.clientX - startX;
+      if (!moved && Math.abs(dx) > 5) { moved = true; track.classList.add("is-dragging"); }
+      if (moved) track.scrollLeft = startLeft - dx;
+    });
+    addEventListener("pointerup", () => {
+      if (!down) return;
+      down = false;
+      if (moved) {
+        track.classList.remove("is-dragging");
+        // let snap settle on the nearest card
+        const i = Math.round(track.scrollLeft / step());
+        track.scrollTo({ left: i * step(), behavior: reduce.matches ? "auto" : "smooth" });
+      }
+    });
+    track.addEventListener("click", (e) => { if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; } }, true);
+    track.addEventListener("dragstart", (e) => e.preventDefault());
+  }
+</script>
+
+<style>
+  .reviews { padding: var(--s-9) 0; border-top: 1px solid var(--line); overflow: hidden; }
+
+  .rhead { display: grid; gap: var(--s-4); margin-bottom: var(--s-7); }
+  .rhead h2 { font-size: var(--t-2xl); }
+  .mute { color: #7a7066; } /* 3.9:1 on ink: large display text only (AA large) */
+  .rhead__side { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-4); }
+  .rhead__note { color: var(--muted); }
+  @media (min-width: 960px) {
+    .rhead { grid-template-columns: 1fr auto; align-items: end; column-gap: var(--s-8); }
+    .rhead .label { grid-column: 1 / -1; }
+    .rhead__side { flex-direction: column; align-items: flex-end; }
+  }
+  .ctrl { display: flex; align-items: center; gap: var(--s-2); }
+  .ctrl__count { font-size: var(--t-sm); font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; margin-right: var(--s-3); }
+  .ctrl__count b { color: var(--paper); }
+  .ctrl__btn { display: grid; place-items: center; width: 52px; height: 52px; border-radius: var(--r); border: 1.5px solid var(--line); background: transparent; color: var(--paper); font-size: 20px; cursor: pointer; transition: background-color var(--d-ui) ease, border-color var(--d-ui) ease, color var(--d-ui) ease, transform var(--d-press) var(--ease-out); }
+  .ctrl__btn:active:not(:disabled) { transform: scale(0.94); }
+  .ctrl__btn:disabled { opacity: .35; cursor: default; }
+  @media (hover: hover) and (pointer: fine) { .ctrl__btn:hover:not(:disabled) { background: var(--orange); border-color: var(--orange); color: var(--ink); } }
+  :global(.flip) { transform: scaleX(-1); }
+  :global(.up) { transform: rotate(-45deg); }
+
+  /* Track: native horizontal scroll + snap. Works with no JS at all. */
+  .track {
+    --card: clamp(280px, 30vw, 420px);
+    display: grid; grid-auto-flow: column; grid-auto-columns: var(--card); column-gap: var(--s-4);
+    overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none;
+    padding-inline: max(var(--gutter), calc((100vw - var(--max)) / 2)); scroll-padding-inline: max(var(--gutter), calc((100vw - var(--max)) / 2));
+    cursor: grab; outline-offset: -3px;
+  }
+  .track::-webkit-scrollbar { display: none; }
+  .track.is-dragging { cursor: grabbing; scroll-snap-type: none; user-select: none; }
+  .card { scroll-snap-align: start; min-height: 520px; border-radius: var(--r); position: relative; overflow: hidden; }
+
+  /* Review card: inspo anatomy (avatar + tag / big quote / name with rule), house style. */
+  .rv { background: var(--ink-2); border: 1px solid var(--line); border-top: 3px solid var(--orange); padding: var(--s-6); display: flex; flex-direction: column; gap: var(--s-4); }
+  .rv__top { display: flex; justify-content: space-between; align-items: center; }
+  .rv__avatar { width: 48px; height: 48px; display: grid; place-items: center; background: var(--orange); color: var(--ink); font-weight: 900; font-style: italic; font-size: 22px; font-variation-settings: "wdth" 125; border-radius: var(--r); }
+  .rv__tag { font-size: var(--t-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; border: 1px solid var(--line); padding: 6px 10px; color: var(--muted); border-radius: var(--r); }
+  .rv__mark { font-size: 120px; line-height: .6; height: 52px; font-weight: 900; font-style: italic; font-variation-settings: "wdth" 125; color: var(--orange); margin-top: var(--s-4); }
+  .rv__stars { display: flex; gap: 3px; margin: 0; }
+  .rv__stars svg { width: 18px; height: 18px; fill: var(--yellow); }
+  .rv__text { margin: 0; font-size: clamp(1.15rem, 1rem + .5vw, 1.4rem); line-height: 1.35; font-weight: 600; letter-spacing: -0.005em; flex: 1; }
+  .rv__cut { color: var(--muted); }
+  .rv__by { display: grid; gap: 2px; padding-left: var(--s-4); border-left: 2px solid var(--line); font-size: var(--t-sm); }
+  .rv__by b { font-size: var(--t-md); }
+  .rv__by span { color: var(--muted); }
+  .rv__by a { color: var(--orange); font-weight: 700; margin-top: var(--s-2); width: fit-content; }
+
+  /* Photo card: real job photo, caption over a functional scrim. */
+  .ph { margin: 0; background: var(--ink-3); }
+  .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .ph::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgb(14 13 12 / .92) 0%, rgb(14 13 12 / .5) 32%, transparent 55%); }
+  .ph figcaption { position: absolute; z-index: 1; left: var(--s-5); right: var(--s-5); bottom: var(--s-5); display: grid; gap: 4px; }
+  .ph__k { font-size: var(--t-xs); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--orange); }
+  .ph figcaption b { font-size: var(--t-lg); font-weight: 900; font-variation-settings: "wdth" 112; text-transform: uppercase; }
+  .ph figcaption span:last-child { color: color-mix(in srgb, var(--paper) 80%, transparent); font-size: var(--t-sm); }
+
+  /* "Moe" card: the surprise. A data point pulled from the reviews themselves. */
+  .moe { background: var(--paper); color: var(--ink); padding: var(--s-6); display: flex; flex-direction: column; gap: var(--s-4); }
+  .moe__k { font-size: var(--t-xs); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--ember); }
+  .moe__name { font-size: clamp(4rem, 2.4rem + 4vw, 6.25rem); font-weight: 900; font-style: italic; font-variation-settings: "wdth" 125; text-transform: uppercase; line-height: .85; letter-spacing: -0.03em; display: flex; flex-direction: column; gap: .12em; }
+  .moe__name .speed { font-size: .35em; }
+  .moe__stat { font-size: var(--t-lg); color: var(--muted-paper); margin-top: auto; }
+  .moe__stat b { color: var(--ink); }
+  .moe__words { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+  .moe__words li { background: var(--ink); color: var(--paper); font-weight: 800; font-size: var(--t-sm); padding: 8px 12px; text-transform: uppercase; letter-spacing: .06em; transform: skewX(var(--skew)); }
+  .moe__src { font-size: var(--t-xs); color: var(--muted-paper); }
+
+  /* End card: hand-off to Google and to the quote. */
+  .end { background: var(--orange); color: var(--ink); padding: var(--s-6); display: flex; flex-direction: column; gap: var(--s-4); }
+  .end__k { font-size: var(--t-xs); font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+  .end__t { font-size: clamp(1.5rem, 1.2rem + 1vw, 2.1rem); font-weight: 900; font-style: italic; font-variation-settings: "wdth" 125; text-transform: uppercase; line-height: .95; letter-spacing: -0.02em; }
+  .end__ctas { margin-top: auto; display: flex; flex-wrap: wrap; gap: var(--s-2); }
+  .btn--ink { --bg: var(--ink); --fg: var(--paper); }
+  .btn--ink-ghost { --bg: transparent; --fg: var(--ink); border-color: var(--ink); }
+  @media (hover: hover) and (pointer: fine) { .btn--ink:hover { --bg: var(--ink-3); } .btn--ink-ghost:hover { --bg: var(--ink); --fg: var(--orange); } }
+  .end :focus-visible { outline-color: var(--ink); }
+
+  .bar { margin-top: var(--s-5); height: 3px; background: var(--line); overflow: hidden; }
+  .bar span { display: block; height: 100%; background: linear-gradient(90deg, var(--yellow), var(--orange)); transform-origin: left; transform: scaleX(.06); }
+
+  /* Scroll-linked motion along the track's own axis (explanation + feedback):
+     cards come into focus as they slide in; stars fill one by one. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .card { view-timeline: --card inline; animation: focus linear both; animation-timeline: --card; animation-range: cover 0% cover 100%; }
+      @keyframes focus { 0% { opacity: .3; transform: scale(.94); } 22%, 80% { opacity: 1; transform: none; } 100% { opacity: .55; transform: scale(.97); } }
+      .rv__stars svg { animation: star-in linear both; animation-timeline: --card; animation-range: entry calc(30% + var(--s) * 9%) entry calc(52% + var(--s) * 9%); }
+      @keyframes star-in { from { opacity: 0; transform: scale(.3) rotate(-30deg); } }
+    }
+  }
+
+  @media (max-width: 600px) {
+    .track { --card: 84vw; }
+    .card { min-height: 460px; }
+    .rv, .moe, .end { padding: var(--s-5); }
+  }
+</style>

@@ -7,8 +7,7 @@ const [w1, w2, w3] = hero.headline;
 ---
 <section class="hero" id="top">
   <div class="hero__media" aria-hidden="true">
-    <Image src={images.hero.src!} alt="" widths={[640, 1024, 1344]} sizes="100vw" loading="eager" fetchpriority="high" />
-    <span class="photo__note">Representative photo</span>
+    <Image src={images.hero.src} alt="" widths={[640, 1024, 1242]} sizes="100vw" loading="eager" fetchpriority="high" />
   </div>
 
   <div class="wrap hero__in">
@@ -36,13 +35,15 @@ const [w1, w2, w3] = hero.headline;
 
 <style>
   .hero { position: relative; min-height: 100svh; display: grid; align-items: end; padding: 120px 0 0; overflow: hidden; isolation: isolate; }
-  .hero__media { position: absolute; inset: 0; z-index: -1; }
-  .hero__media img { width: 100%; height: 100%; object-fit: cover; object-position: 70% 50%; }
-  /* Functional scrim: dark where the type sits (left + bottom), photo left readable on the right. */
+  /* Real crew photo: a right-hand panel, so faces stay clear of the headline.
+     The headline is allowed to run into the panel's faded left edge. */
+  .hero__media { position: absolute; top: 0; bottom: 0; right: 0; left: 54%; z-index: -1; }
+  .hero__media img { width: 100%; height: 100%; object-fit: cover; object-position: 58% 30%; }
   .hero__media::after { content: ""; position: absolute; inset: 0; background:
-      linear-gradient(90deg, rgb(14 13 12 / .92) 0%, rgb(14 13 12 / .7) 38%, rgb(14 13 12 / .1) 75%),
-      linear-gradient(0deg, var(--ink) 0%, transparent 35%); }
-  .hero__media .photo__note { left: auto; right: var(--gutter); bottom: auto; top: 96px; z-index: 1; }
+      linear-gradient(90deg, var(--ink) 0%, rgb(14 13 12 / .55) 18%, transparent 42%),
+      linear-gradient(0deg, var(--ink) 0%, transparent 30%); }
+  .js .hero__media img { animation: hero-wipe 1300ms var(--ease-in-out) both; animation-delay: 100ms; }
+  @keyframes hero-wipe { from { clip-path: inset(0 0 0 100%); transform: scale(1.08); } }
 
   .hero__in > * { min-width: 0; }
   .hero__in { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: var(--s-7); row-gap: var(--s-5); }
@@ -73,14 +74,16 @@ const [w1, w2, w3] = hero.headline;
   @keyframes streak { from { transform: translateX(-40%) scaleX(0.2); opacity: 0; } }
   @keyframes fade-up { from { opacity: 0; transform: translateY(16px); } }
   @media (prefers-reduced-motion: reduce) {
-    .js .hero__line > span:first-child, .js .hero__speed i, .js .hero__offer, .js .hero__facts { animation: fade 400ms ease both; animation-delay: 0ms; }
+    .js .hero__line > span:first-child, .js .hero__speed i, .js .hero__offer, .js .hero__facts, .js .hero__media img { animation: fade 400ms ease both; animation-delay: 0ms; }
     @keyframes fade { from { opacity: 0; } }
   }
 
   @media (max-width: 760px) {
-    .hero { min-height: 0; padding-top: 124px; }
-    .hero__media::after { background: linear-gradient(180deg, rgb(14 13 12 / .55) 0%, rgb(14 13 12 / .82) 45%, var(--ink) 100%); }
-    .hero__media .photo__note { top: 84px; left: var(--gutter); right: auto; }
+    /* Phones: the photo becomes a banner on top, headline overlaps its faded foot. */
+    .hero { display: block; min-height: 0; padding-top: 76px; }
+    .hero__media { position: relative; inset: auto; height: min(78vw, 360px); z-index: 0; }
+    .hero__media::after { background: linear-gradient(0deg, var(--ink) 0%, rgb(14 13 12 / .4) 35%, transparent 60%); }
+    .hero__in { position: relative; margin-top: -3.5rem; }
     .hero__in { grid-template-columns: 1fr; }
     .hero__facts { grid-template-columns: 1fr; margin-top: var(--s-5); }
     .hero__facts li, .hero__facts li + li { padding: var(--s-3) 0; border-left: 0; border-bottom: 1px solid var(--line); }

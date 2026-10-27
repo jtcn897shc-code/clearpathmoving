@@ -21,8 +21,8 @@ const tertiary = services.filter((s) => s.weight === "tertiary");
       {primary.map((s, i) => (
         <article class:list={["feature", `feature--${i}`]}>
           <div class="photo feature__photo" data-reveal>
-            <Image src={images[s.image!].src!} alt={images[s.image!].alt} widths={[560, 900, 1200]} sizes="(max-width: 860px) 100vw, 58vw" />
-            <span class="photo__note">Representative photo</span>
+            <Image src={images[s.image!].src} alt={images[s.image!].alt} widths={[560, 900, 1200]} sizes="(max-width: 860px) 100vw, 58vw" />
+            {!images[s.image!].real && <span class="photo__note">Representative photo</span>}
           </div>
           <div class="feature__body">
             <p class="feature__kicker">{s.kicker}</p>
@@ -60,7 +60,7 @@ const tertiary = services.filter((s) => s.weight === "tertiary");
               <p>{s.body}</p>
             </div>
             {s.image
-              ? <div class="photo row__thumb"><Image src={images[s.image].src!} alt={images[s.image].alt} widths={[240, 480]} sizes="200px" /></div>
+              ? <div class="photo row__thumb"><Image src={images[s.image].src} alt={images[s.image].alt} widths={[240, 480]} sizes="200px" />{!images[s.image].real && <span class="photo__note">Representative</span>}</div>
               : <span class="row__thumb row__thumb--empty" aria-hidden="true"><span class="speed"><i></i><i></i></span></span>}
           </li>
         ))}
